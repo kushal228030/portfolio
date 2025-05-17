@@ -77,7 +77,7 @@ export default function Hero({ scrollToSection }) {
                 <Github size={20} />
               </a>
               <a 
-                href="https://www.linkedin.com/in/kushal-gupta/" 
+                href="https://www.linkedin.com/in/kushal-gupta-21ab92325" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 text-slate-700 hover:bg-blue-600 hover:text-white transition-colors duration-300"
