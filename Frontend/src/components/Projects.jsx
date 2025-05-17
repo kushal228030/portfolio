@@ -19,10 +19,10 @@ export default function Projects() {
       ],
       links: [
         {
-          label: "Model Repository",
-          url: "huggingface.co/Kushal2125/BrainTumorDetection",
+          label: "Model Deployed",
+          url: "https://huggingface.co/Kushal2125/BrainTumorDetection",
           bgClass: "bg-blue-100 text-blue-800",
-          icon: Github
+          icon: ExternalLink
         }
       ]
     },
