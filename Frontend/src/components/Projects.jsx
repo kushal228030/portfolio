@@ -17,14 +17,20 @@ export default function Projects() {
         "Engineered Flask API backend for efficient real-time predictions",
         "Designed intuitive mobile interface focused on medical professional usability"
       ],
-      links: [
-        {
-          label: "Model Deployed",
-          url: "https://huggingface.co/Kushal2125/BrainTumorDetection",
-          bgClass: "bg-blue-100 text-blue-800",
-          icon: ExternalLink
-        }
-      ]
+     links: [
+  {
+    label: "Brain Tumor API",
+    url: "https://Kushal2125-BrainTumorDetection.hf.space/",
+    bgClass: "bg-blue-100 text-blue-800",
+    icon: ExternalLink
+  },
+  {
+    label: "Lung Cancer API",
+    url: "https://kushal2125-lungcancerdetection2.hf.space/",
+    bgClass: "bg-blue-100 text-blue-800",
+    icon: ExternalLink
+  }
+]
     },
     {
       title: "Fitness Analytics Platform",
