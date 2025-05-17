@@ -78,7 +78,7 @@ export default function Contact() {
                   <Linkedin className="text-blue-600 mr-3 mt-1" size={20} />
                   <div>
                     <p className="font-medium">LinkedIn</p>
-                    <a href="https://www.linkedin.com/in/kushal-gupta/" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-blue-600">
+                    <a href="https://www.linkedin.com/in/kushal-gupta-21ab92325" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-blue-600">
                       Kushal Gupta
                     </a>
                   </div>
