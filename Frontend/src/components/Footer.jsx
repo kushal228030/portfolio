@@ -79,7 +79,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Kushal Gupta. All rights reserved.
           </p>
           <p className="text-slate-500 text-xs">
-            Designed and built with React & Tailwind CSS
+            Designed and built with React & Tailwind CSS and used nodemailer for Mailing System.
           </p>
         </div>
       </div>
