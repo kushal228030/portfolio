@@ -61,7 +61,7 @@ export default function Footer() {
                 <span>GitHub</span>
               </a>
               <a 
-                href="https://www.linkedin.com/in/kushal-gupta/" 
+                href="www.linkedin.com/in/kushal-gupta-21ab92325" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="flex items-center bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-md transition-colors duration-300"
