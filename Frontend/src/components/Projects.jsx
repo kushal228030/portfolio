@@ -10,7 +10,7 @@ export default function Projects() {
       description: "Developed an advanced mobile application utilizing React Native (Expo) and a CNN-based deep learning model to accurately identify brain tumors from MRI scans with 97% accuracy.",
       bgClass: "bg-gradient-to-r from-blue-500 to-indigo-700",
       iconColor: "text-blue-600",
-      date: "March 2024",
+      date: "March 2025",
       category: "AI/Healthcare",
       features: [
         "Containerized with Docker and deployed to Hugging Face for scalable inference",
@@ -37,7 +37,7 @@ export default function Projects() {
       description: "Architected a comprehensive full-stack fitness tracking web application for monitoring health metrics, analyzing workout performance, and achieving personalized fitness goals.",
       bgClass: "bg-gradient-to-r from-green-500 to-teal-700",
       iconColor: "text-green-600",
-      date: "January 2024",
+      date: "January 2025",
       category: "Full-Stack/ML",
       features: [
         "Implemented supervised learning algorithms for data-driven workout recommendations",
@@ -58,7 +58,7 @@ export default function Projects() {
       description: "Designed and deployed a scalable MERN-stack travel platform with comprehensive booking capabilities, user authentication, and administrative functionality.",
       bgClass: "bg-gradient-to-r from-purple-500 to-pink-700",
       iconColor: "text-purple-600",
-      date: "October 2023",
+      date: "May 2025",
       category: "Full-Stack/MERN",
       features: [
         "Engineered advanced filtering system with multi-parameter search optimization",
