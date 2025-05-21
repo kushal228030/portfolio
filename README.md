@@ -34,13 +34,17 @@ To run this locally:
 # Clone the repository
 git clone https://github.com/kushal228030/portfolio.git
 cd portfolio
-
+cd frontend
 # Install dependencies
 npm install
+# Start the frontend server
+npm start
+cd backend
+# Install dependencies
+npm install
+# Start the backend server
+node server.js
 ```
-# Start the development server
-npm run dev
-
 🔐 Environment Variables
 Frontend:
 REACT_APP_BURL=backendurl
