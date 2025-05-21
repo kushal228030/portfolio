@@ -37,24 +37,17 @@ cd portfolio
 
 # Install dependencies
 npm install
-
+```
 # Start the development server
 npm run dev
-📁 Folder Structure
-portfolio/
-├── public/              # Static files and favicon
-├── src/
-│   ├── components/      # Reusable UI components
-│   ├── pages/           # Page-level components (Home, About, Projects, etc.)
-│   └── main.jsx         # App entry point
-├── .gitignore
-├── index.html
-├── package.json
-└── README.md
 
 🔐 Environment Variables
-VITE_EMAIL_API_KEY=your_api_key
-VITE_SERVICE_ID=your_service_id
+Frontend:
+REACT_APP_BURL=backendurl
+Backend:
+EMAIL_PASSWORD=EMAIL_APP_PASS
+EMAIL_USER=EMAIL_ID
+PORT=PORT_NO
 Update the variables in .env and ensure .env is added to .gitignore.
 
 🙋‍♂️ Author
@@ -69,10 +62,6 @@ Contributions, issues, and feature requests are welcome!
 Feel free to fork the repo and submit a PR.
 
 ⭐️ If you like this project, don't forget to leave a star!
-
-yaml
-Copy
-Edit
 
 ---
 
