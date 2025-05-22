@@ -1,53 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  Github, Linkedin, Mail, Phone, User, Briefcase, Newspaper, CheckCircle2
+  Github, Linkedin, Mail, Phone, User, Briefcase, Newspaper, CheckCircle2, 
+  Code, Database, Smartphone, Brain, Zap, Star, ArrowRight, Heart
 } from 'lucide-react';
 
 export default function About() {
   const [activeTab, setActiveTab] = useState('profile');
-  const [isVisible, setIsVisible] = useState(false);
-  const [animateCards, setAnimateCards] = useState(false);
-  const [animationKey, setAnimationKey] = useState(0);
+  const [isInView, setIsInView] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [hoveredCard, setHoveredCard] = useState(null);
   const sectionRef = useRef(null);
-  const animationTimeout = useRef(null);
-
-  const tabs = [
-    { id: 'profile', label: 'Profile', icon: <User className="w-5 h-5" /> },
-    { id: 'experience', label: 'Experience', icon: <Briefcase className="w-5 h-5" /> }
-  ];
-
-  // Clear existing timeout
-  const clearAnimationTimeout = () => {
-    if (animationTimeout.current) {
-      clearTimeout(animationTimeout.current);
-    }
-  };
-
-  // Trigger animations
-  const triggerAnimations = () => {
-    clearAnimationTimeout();
-    setAnimateCards(false);
-    setAnimationKey(prev => prev + 1);
-    
-    animationTimeout.current = setTimeout(() => {
-      setAnimateCards(true);
-    }, 100);
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            triggerAnimations();
-          } else {
-            setIsVisible(false);
-            setAnimateCards(false);
-          }
-        });
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
       },
-      { threshold: 0.2 }
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
     );
 
     if (sectionRef.current) {
@@ -55,138 +27,196 @@ export default function About() {
     }
 
     return () => {
-      observer.disconnect();
-      clearAnimationTimeout();
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
     };
   }, []);
 
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-    // Trigger animations when tab changes
-    triggerAnimations();
-  };
-
-  // Handle mouse enter to retrigger animations
-  const handleMouseEnter = () => {
-    if (isVisible) {
-      triggerAnimations();
+  const handleMouseMove = (e) => {
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (rect) {
+      setMousePosition({
+        x: ((e.clientX - rect.left) / rect.width) * 100,
+        y: ((e.clientY - rect.top) / rect.height) * 100
+      });
     }
   };
 
+  const tabs = [
+    { id: 'profile', label: 'Profile', icon: <User className="w-5 h-5" />, color: 'indigo' },
+    { id: 'experience', label: 'Experience', icon: <Briefcase className="w-5 h-5" />, color: 'purple' }
+  ];
+
+  const skills = [
+    { name: 'Full-Stack Development', icon: <Code className="w-6 h-6" />, level: 90 },
+    { name: 'Mobile Development', icon: <Smartphone className="w-6 h-6" />, level: 85 },
+    { name: 'Machine Learning', icon: <Brain className="w-6 h-6" />, level: 80 },
+    { name: 'Database Design', icon: <Database className="w-6 h-6" />, level: 88 }
+  ];
+
   return (
     <section 
+      ref={sectionRef}
       id="about" 
-      className="py-24 bg-gradient-to-b from-white to-slate-50 overflow-hidden"
-      onMouseEnter={handleMouseEnter}
+      className="py-24 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50 relative overflow-hidden"
+      onMouseMove={handleMouseMove}
     >
-      <div className="container mx-auto px-6 max-w-6xl">
-        {/* Animated Header */}
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Floating Particles */}
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className={`absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full opacity-20 ${
+              isInView ? 'animate-float' : ''
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+        
+        {/* Dynamic Gradient Orb */}
         <div 
-          ref={sectionRef}
-          className={`text-center mb-16 transform transition-all duration-1000 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          className={`absolute w-96 h-96 bg-gradient-to-r from-blue-400/20 to-indigo-500/20 rounded-full blur-3xl transition-all duration-1000 ${
+            isInView ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
           }`}
-        >
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-            About Me
-          </h2>
-          <div 
-            className={`h-1 mt-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mx-auto shadow-lg transition-all duration-1000 delay-300 ${
-              isVisible ? 'w-24' : 'w-0'
-            }`}
-          ></div>
-          <p 
-            className={`mt-5 text-lg text-slate-600 max-w-xl mx-auto leading-relaxed transform transition-all duration-1000 delay-500 ${
-              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
-            }`}
-          >
-            Computer Science Graduate | Full-Stack Developer | Machine Learning Enthusiast
+          style={{
+            left: `${mousePosition.x}%`,
+            top: `${mousePosition.y}%`,
+            transform: `translate(-50%, -50%) scale(${isInView ? 1 : 0})`
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-6 max-w-6xl relative z-10">
+        {/* Enhanced Header */}
+        <div className="text-center mb-20">
+          <div className={`inline-block transform transition-all duration-1200 ${
+            isInView ? 'translate-y-0 opacity-100 rotate-0' : 'translate-y-12 opacity-0 -rotate-6'
+          }`}>
+            <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 tracking-tight relative">
+              About Me
+              <div className="absolute -top-2 -right-2">
+              </div>
+            </h2>
+          </div>
+          
+          <div className="relative mt-6">
+            <div className={`h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-full mx-auto shadow-lg transform transition-all duration-1500 delay-300 ${
+              isInView ? 'w-40 opacity-100 scale-y-100' : 'w-0 opacity-0 scale-y-50'
+            }`}></div>
+            <div className={`absolute -top-1 left-1/2 w-3 h-3 bg-white border-2 border-indigo-500 rounded-full transform -translate-x-1/2 transition-all duration-1000 delay-800 ${
+              isInView ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+            }`}></div>
+          </div>
+          
+          <p className={`mt-8 text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed transform transition-all duration-1000 delay-500 ${
+            isInView ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+          }`}>
+            <span className="font-semibold text-indigo-600">Computer Science Graduate</span> | 
+            <span className="font-semibold text-blue-600"> Full-Stack Developer</span> | 
+            <span className="font-semibold text-purple-600"> Machine Learning Enthusiast</span>
           </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Main Content Card */}
+          {/* Main Content */}
           <div className="w-full">
-            <div 
-              className={`bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden transform transition-all duration-800 delay-700 ${
-                isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-20 opacity-0 scale-95'
-              }`}
-            >
-              {/* Animated Tabs */}
-              <div className="flex border-b border-slate-300 bg-slate-100 relative">
-                {/* Tab indicator */}
-                <div 
-                  className="absolute bottom-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-600 transition-all duration-300 ease-out"
-                  style={{
-                    width: `${100 / tabs.length}%`,
-                    left: `${(tabs.findIndex(tab => tab.id === activeTab) * 100) / tabs.length}%`,
-                  }}
-                ></div>
-                
+            <div className={`bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 overflow-hidden transform transition-all duration-1000 delay-900 hover:shadow-3xl ${
+              isInView ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-95'
+            }`}>
+              {/* Enhanced Tabs */}
+              <div className="flex border-b border-slate-200/50 bg-gradient-to-r from-slate-50 to-blue-50/50 relative">
                 {tabs.map((tab, index) => (
                   <button
                     key={tab.id}
-                    onClick={() => handleTabChange(tab.id)}
+                    onClick={() => setActiveTab(tab.id)}
                     className={`
-                      flex-1 flex items-center justify-center gap-3 px-8 py-5 font-semibold text-sm transition-all duration-300 relative group
+                      relative flex items-center gap-4 px-10 py-6 font-semibold text-sm transition-all duration-500 transform group
                       ${activeTab === tab.id
-                        ? 'text-indigo-600 bg-white shadow-inner transform -translate-y-1'
-                        : 'text-slate-600 hover:text-indigo-600 hover:bg-white hover:-translate-y-0.5'}
-                      focus:outline-indigo-500 focus:outline-2 focus:outline-offset-2
+                        ? `text-${tab.color}-600 bg-white shadow-lg scale-105 -translate-y-1`
+                        : 'text-slate-600 hover:text-indigo-600 hover:bg-white/70 hover:scale-105'}
+                      focus:outline-none focus:ring-4 focus:ring-indigo-200
+                      ${isInView ? `animate-slide-in-${index === 0 ? 'left' : 'right'}` : ''}
                     `}
-                    aria-selected={activeTab === tab.id}
-                    role="tab"
-                    tabIndex={activeTab === tab.id ? 0 : -1}
                     style={{
-                      animationDelay: `${index * 100}ms`
+                      animationDelay: `${1100 + index * 200}ms`,
+                      animationFillMode: 'both'
                     }}
                   >
-                    <span className={`transition-transform duration-200 ${
-                      activeTab === tab.id ? 'scale-110' : 'group-hover:scale-105'
+                    {/* Tab Active Indicator */}
+                    {activeTab === tab.id && (
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-t-full animate-expand-width"></div>
+                    )}
+                    
+                    <span className={`transform transition-all duration-300 group-hover:rotate-12 group-hover:scale-110 ${
+                      activeTab === tab.id ? 'text-indigo-600 rotate-6' : ''
                     }`}>
                       {tab.icon}
                     </span>
-                    <span>{tab.label}</span>
+                    <span className="relative">
+                      {tab.label}
+                      {activeTab === tab.id && (
+                        <div className="absolute -top-1 -right-2 w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                      )}
+                    </span>
                   </button>
                 ))}
               </div>
 
-              {/* Animated Content */}
-              <div
-                key={`${activeTab}-${animationKey}`}
-                className="p-8 md:p-12 text-slate-700 leading-relaxed"
-                role="tabpanel"
-              >
+              {/* Enhanced Content */}
+              <div className="p-10 md:p-14 relative">
+                {/* Content Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute top-4 right-4 w-32 h-32 border-2 border-indigo-300 rounded-full"></div>
+                  <div className="absolute bottom-4 left-4 w-24 h-24 border-2 border-blue-300 rounded-full animate-pulse"></div>
+                </div>
+
                 {/* Profile Tab */}
                 {activeTab === 'profile' && (
-                  <div className="space-y-8">
-                    <h3 className="text-3xl font-bold text-slate-900 animate-slideInLeft">
-                      Professional Profile
-                    </h3>
-                    <div className="space-y-6">
-                      <p className="animate-slideInLeft" style={{ animationDelay: '0.1s' }}>
-                        I am a Computer Science graduate with hands-on experience in full-stack web and mobile development 
-                        using the MERN stack and React Native. I'm skilled in building and deploying machine learning models 
-                        via Flask APIs on Hugging Face and Render.
-                      </p>
-                      <p className="animate-slideInLeft" style={{ animationDelay: '0.2s' }}>
-                        My focus is on delivering real-world projects with practical, user-friendly solutions. I enjoy 
-                        combining technical proficiency with creative problem-solving to build applications that make 
-                        a difference.
-                      </p>
+                  <div className="space-y-12 relative z-10">
+                    <div className={`transform transition-all duration-1000 ${
+                      isInView ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'
+                    }`} style={{ animationDelay: '1300ms' }}>
+                      <h3 className="text-4xl font-black text-slate-900 mb-6 relative inline-block">
+                        Professional Profile
+                        <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-transparent rounded-full"></div>
+                      </h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+                    <div className="space-y-6">
+                      {[
+                        "I am a Computer Science graduate with hands-on experience in full-stack web and mobile development using the MERN stack and React Native. I'm skilled in building and deploying machine learning models via Flask APIs on Hugging Face and Render.",
+                        "My focus is on delivering real-world projects with practical, user-friendly solutions. I enjoy combining technical proficiency with creative problem-solving to build applications that make a difference.",
+                        "I'm passionate about staying updated with the latest technologies and continuously learning new skills to enhance my development capabilities."
+                      ].map((text, index) => (
+                        <p key={index} className={`text-lg text-slate-700 leading-relaxed transform transition-all duration-800 hover:text-slate-900 ${
+                          isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+                        }`} style={{ animationDelay: `${1500 + index * 200}ms` }}>
+                          {text}
+                        </p>
+                      ))}
+                    </div>
+                    {/* Enhanced Interests Card */}
+                    <div className={`transform transition-all duration-1000 ${
+                      isInView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                    }`} style={{ animationDelay: '2700ms' }}>
                       <InfoCard 
-                        title="Personal Interests" 
+                        title="Areas of Interest" 
                         items={[
                           'Full-Stack Web Development',
-                          'Mobile App Development',
+                          'Mobile App Development', 
                           'Machine Learning Integration',
-                        ]} 
-                        delay={300}
-                        isVisible={animateCards}
-                        animationKey={animationKey}
+                          'UI/UX Design Principles',
+                          'API Development & Integration'
+                        ]}
+                        isInView={isInView}
+                        delay={2900}
                       />
                     </div>
                   </div>
@@ -194,143 +224,138 @@ export default function About() {
 
                 {/* Experience Tab */}
                 {activeTab === 'experience' && (
-                  <div className="space-y-8">
-                    <h3 className="text-3xl font-bold text-slate-900 animate-slideInLeft">
-                      Work Experience
-                    </h3>
+                  <div className="space-y-12">
+                    <div className={`transform transition-all duration-1000 ${
+                      isInView ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'
+                    }`} style={{ animationDelay: '1300ms' }}>
+                      <h3 className="text-4xl font-black text-slate-900 mb-6 relative inline-block">
+                        Work Experience
+                        <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-transparent rounded-full"></div>
+                      </h3>
+                    </div>
+
                     <Timeline
                       entries={[
                         {
-                          title: 'Fresher',
-                          subtitle: '0 Years',
-                          description: 'Looking forward to my first full-time opportunity.',
+                          title: 'Fresh Graduate',
+                          subtitle: 'Ready for New Opportunities',
+                          description: 'Excited to begin my professional journey and contribute to innovative projects while continuing to learn and grow in the tech industry.',
+                          icon: <Star className="w-5 h-5" />,
+                          color: 'from-green-500 to-emerald-600'
                         },
                       ]}
-                      isVisible={animateCards}
-                      animationKey={animationKey}
+                      isInView={isInView}
                     />
+
+                    {/* Call to Action */}
+                    <div className={`mt-12 p-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white text-center transform transition-all duration-1000 hover:scale-105 ${
+                      isInView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                    }`} style={{ animationDelay: '1800ms' }}>
+                      <h4 className="text-2xl font-bold mb-4">Ready for New Challenges!</h4>
+                      <p className="text-indigo-100 mb-6">
+                        I'm actively seeking opportunities to contribute to meaningful projects and grow as a developer.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </div>
-
       </div>
-
       <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
         @keyframes slideInLeft {
-          from { 
-            opacity: 0; 
-            transform: translateX(-30px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateX(0); 
-          }
+          from { opacity: 0; transform: translateX(-40px) rotate(-5deg); }
+          to { opacity: 1; transform: translateX(0) rotate(0deg); }
         }
         
-        @keyframes slideInUp {
-          from { 
-            opacity: 0; 
-            transform: translateY(30px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(40px) rotate(5deg); }
+          to { opacity: 1; transform: translateX(0) rotate(0deg); }
         }
         
-        @keyframes scaleIn {
-          from { 
-            opacity: 0; 
-            transform: scale(0.9) rotateY(10deg); 
-          }
-          to { 
-            opacity: 1; 
-            transform: scale(1) rotateY(0deg); 
-          }
+        @keyframes expandWidth {
+          from { width: 0; opacity: 0; }
+          to { width: 100%; opacity: 1; }
         }
         
         @keyframes bounceIn {
-          0% { 
-            opacity: 0; 
-            transform: scale(0.3); 
-          }
-          50% { 
-            opacity: 1; 
-            transform: scale(1.1); 
-          }
-          100% { 
-            opacity: 1; 
-            transform: scale(1); 
-          }
+          0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+          50% { transform: scale(1.1) rotate(-90deg); opacity: 0.8; }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         
-        @keyframes fadeInUp {
-          from { 
-            opacity: 0; 
-            transform: translateY(20px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-
-        .animate-slideInLeft {
-          animation: slideInLeft 0.6s ease-out forwards;
-          opacity: 0;
+        @keyframes skillFill {
+          from { width: 0; transform: scaleX(0); }
+          to { transform: scaleX(1); }
         }
         
-        .animate-slideInUp {
-          animation: slideInUp 0.6s ease-out forwards;
-          opacity: 0;
+        .animate-float {
+          animation: float var(--duration, 4s) ease-in-out infinite;
         }
         
-        .animate-scaleIn {
-          animation: scaleIn 0.6s ease-out forwards;
-          opacity: 0;
+        .animate-slide-in-left {
+          animation: slideInLeft 0.8s ease-out forwards;
         }
         
-        .animate-bounceIn {
-          animation: bounceIn 0.6s ease-out forwards;
-          opacity: 0;
+        .animate-slide-in-right {
+          animation: slideInRight 0.8s ease-out forwards;
         }
         
-        .animate-fadeInUp {
-          animation: fadeInUp 0.6s ease-out forwards;
-          opacity: 0;
+        .animate-expand-width {
+          animation: expandWidth 0.6s ease-out forwards;
+        }
+        
+        .animate-bounce-in {
+          animation: bounceIn 1s ease-out forwards;
+        }
+        
+        .animate-skill-fill {
+          animation: skillFill 1.5s ease-out forwards;
+        }
+        
+        .shadow-3xl {
+          box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
         }
       `}</style>
     </section>
   );
 }
 
-// Enhanced Info Card with animations
-function InfoCard({ title, items, delay = 0, isVisible, animationKey }) {
+// Enhanced Info Card Component
+function InfoCard({ title, items, isInView, delay }) {
   return (
-    <div 
-      key={`info-card-${animationKey}`}
-      className={`bg-slate-50 p-7 rounded-xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 hover:scale-105 group ${
-        isVisible ? 'animate-scaleIn' : ''
-      }`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <h4 className="font-semibold text-slate-900 text-lg mb-5 group-hover:text-indigo-600 transition-colors duration-300">
+    <div className={`bg-gradient-to-br from-white to-blue-50/50 p-8 rounded-2xl border border-blue-200/50 shadow-lg transition-all duration-700 hover:shadow-2xl hover:scale-105 hover:-translate-y-2 transform ${
+      isInView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
+    }`} style={{ animationDelay: `${delay}ms` }}>
+      <h4 className="font-bold text-slate-900 text-xl mb-6 relative inline-block">
         {title}
+        <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-indigo-500 to-transparent rounded-full"></div>
       </h4>
-      <ul className="space-y-3 text-slate-700">
+      <ul className="space-y-4">
         {items.map((item, idx) => (
           <li 
-            key={`${item}-${animationKey}-${idx}`}
-            className={`flex items-center gap-3 transition-all duration-300 hover:translate-x-2 ${
-              isVisible ? 'animate-slideInLeft' : ''
+            key={idx} 
+            className={`flex items-center gap-4 transform transition-all duration-500 hover:translate-x-3 hover:text-indigo-700 group cursor-pointer ${
+              isInView ? 'translate-x-0 opacity-100' : '-translate-x-6 opacity-0'
             }`}
-            style={{ animationDelay: `${delay + (idx * 100) + 200}ms` }}
+            style={{ 
+              animationDelay: `${delay + (idx * 150)}ms`,
+              transitionDelay: `${idx * 50}ms`
+            }}
           >
-            <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 transition-all duration-300 group-hover:text-indigo-600 group-hover:scale-110" />
-            <span className="group-hover:text-slate-900 transition-colors duration-300">{item}</span>
+            <div className="relative">
+              <CheckCircle2 className="w-6 h-6 text-indigo-500 transform transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
+              <div className="absolute inset-0 w-6 h-6 bg-indigo-400 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300 opacity-20"></div>
+            </div>
+            <span className="text-slate-700 font-medium group-hover:font-semibold transition-all duration-300">
+              {item}
+            </span>
           </li>
         ))}
       </ul>
@@ -338,51 +363,49 @@ function InfoCard({ title, items, delay = 0, isVisible, animationKey }) {
   );
 }
 
-// Enhanced Timeline Component with animations
-function Timeline({ entries, isVisible, animationKey }) {
+// Enhanced Timeline Component
+function Timeline({ entries, isInView }) {
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {entries.map((entry, idx) => (
         <div 
-          key={`timeline-${animationKey}-${idx}`}
-          className={`relative pl-12 border-l-4 border-indigo-300 transition-all duration-700 hover:border-indigo-500 ${
-            isVisible ? 'animate-slideInUp' : ''
+          key={idx} 
+          className={`relative pl-16 transform transition-all duration-1000 group ${
+            isInView ? 'translate-x-0 opacity-100' : '-translate-x-12 opacity-0'
           }`}
-          style={{ animationDelay: `${idx * 200}ms` }}
+          style={{ animationDelay: `${1500 + (idx * 300)}ms` }}
         >
-          {/* Animated timeline dot */}
-          <div 
-            className={`absolute -left-6 top-3 bg-indigo-600 w-8 h-8 rounded-full border-4 border-white shadow-lg flex items-center justify-center transition-all duration-500 hover:scale-125 hover:shadow-xl ${
-              isVisible ? 'animate-bounceIn' : ''
-            }`}
-            style={{ animationDelay: `${idx * 200 + 300}ms` }}
-          >
-            <Briefcase className="w-5 h-5 text-white transition-transform duration-300 hover:rotate-12" />
+          {/* Timeline Line */}
+          <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gradient-to-b from-indigo-400 to-purple-400"></div>
+          
+          {/* Timeline Node */}
+          <div className={`absolute left-0 top-4 w-12 h-12 bg-gradient-to-br ${entry.color || 'from-indigo-500 to-purple-600'} rounded-2xl border-4 border-white shadow-xl flex items-center justify-center transform transition-all duration-500 group-hover:scale-125 group-hover:rotate-12 ${
+            isInView ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+          }`} style={{ animationDelay: `${1700 + (idx * 300)}ms` }}>
+            {entry.icon || <Briefcase className="w-6 h-6 text-white" />}
+            <div className="absolute inset-0 bg-white rounded-2xl scale-0 group-hover:scale-110 transition-transform duration-300 opacity-20"></div>
           </div>
           
-          {/* Animated content */}
-          <div 
-            className={`mb-3 transition-all duration-500 hover:translate-x-2 ${
-              isVisible ? 'animate-fadeInUp' : ''
-            }`}
-            style={{ animationDelay: `${idx * 200 + 400}ms` }}
-          >
-            <h4 className="text-2xl font-semibold text-slate-900 hover:text-indigo-600 transition-colors duration-300">
-              {entry.title}
-            </h4>
-            <p className="text-indigo-600 font-medium hover:text-indigo-700 transition-colors duration-300">
-              {entry.subtitle}
+          {/* Content */}
+          <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+            <div className="mb-4">
+              <h4 className={`text-2xl font-bold text-slate-900 transform transition-all duration-700 group-hover:text-indigo-600 ${
+                isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              }`} style={{ animationDelay: `${1800 + (idx * 300)}ms` }}>
+                {entry.title}
+              </h4>
+              <p className={`text-indigo-600 font-semibold text-lg transform transition-all duration-700 ${
+                isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              }`} style={{ animationDelay: `${1900 + (idx * 300)}ms` }}>
+                {entry.subtitle}
+              </p>
+            </div>
+            <p className={`text-slate-700 text-lg leading-relaxed transform transition-all duration-700 group-hover:text-slate-900 ${
+              isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`} style={{ animationDelay: `${2000 + (idx * 300)}ms` }}>
+              {entry.description}
             </p>
           </div>
-          
-          <p 
-            className={`text-slate-700 hover:text-slate-900 transition-all duration-300 ${
-              isVisible ? 'animate-fadeInUp' : ''
-            }`}
-            style={{ animationDelay: `${idx * 200 + 500}ms` }}
-          >
-            {entry.description}
-          </p>
         </div>
       ))}
     </div>
