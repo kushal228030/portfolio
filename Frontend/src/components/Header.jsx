@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ChevronDown, ExternalLink, Download, FileText } from 'lucide-react';
+
 export default function Header({ activeSection, scrollToSection }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [resumeDropdownOpen, setResumeDropdownOpen] = useState(false);
-  const [showResumeModal, setShowResumeModal] = useState(false);
 
   const navigationItems = [
     { name: 'Home', type: 'link' },
@@ -26,11 +26,7 @@ export default function Header({ activeSection, scrollToSection }) {
   // Track scroll position for header styling changes
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -61,46 +57,33 @@ export default function Header({ activeSection, scrollToSection }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [resumeDropdownOpen]);
 
-  // Close resume modal when escape key is pressed
+  // Close mobile menu when escape key is pressed
   useEffect(() => {
     const handleEscKey = (event) => {
-      if (event.key === 'Escape' && showResumeModal) {
-        setShowResumeModal(false);
+      if (event.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
       }
     };
 
     document.addEventListener('keydown', handleEscKey);
     return () => document.removeEventListener('keydown', handleEscKey);
-  }, [showResumeModal]);
+  }, [mobileMenuOpen]);
 
   // Handle resume actions
   const handleResumeAction = (action) => {
     setResumeDropdownOpen(false);
     
     if (action === 'view') {
-      setShowResumeModal(true);
+      window.open("/KushalGuptaResume.pdf", "_blank");
     } else if (action === 'download') {
-      // Create a download link for the resume
       const link = document.createElement('a');
-      link.href = "/KushalGuptaResume.pdf"; // Fixed path to resume
+      link.href = "/KushalGuptaResume.pdf";
       link.download = 'Kushal_Gupta_Resume.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
   };
-
-  // Hover animation for navigation items
-  const navItemClasses = (isActive) => `
-    relative px-3 py-2 rounded-lg font-medium transition-all duration-300
-    ${isActive 
-      ? 'text-blue-600 bg-blue-50 shadow-sm' 
-      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}
-    after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:w-0 
-    after:h-0.5 after:bg-blue-600 after:transform after:-translate-x-1/2
-    after:transition-all after:duration-300
-    ${isActive ? 'after:w-1/2' : 'hover:after:w-3/4'}
-  `;
 
   return (
     <header 
@@ -135,7 +118,7 @@ export default function Header({ activeSection, scrollToSection }) {
         
         {/* Mobile menu button */}
         <button 
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileMenuOpen}
@@ -151,32 +134,29 @@ export default function Header({ activeSection, scrollToSection }) {
                 <div className="resume-dropdown relative">
                   <button
                     onClick={() => setResumeDropdownOpen(!resumeDropdownOpen)}
-                    className={`flex items-center px-3 py-2 rounded-lg font-medium transition-all duration-300 ${
+                    className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                       activeSection === item.name.toLowerCase() 
                         ? 'text-blue-600 bg-blue-50 shadow-sm' 
                         : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
-                    } after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:w-0 
-                    after:h-0.5 after:bg-blue-600 after:transform after:-translate-x-1/2
-                    after:transition-all after:duration-300
-                    ${activeSection === item.name.toLowerCase() ? 'after:w-1/2' : 'hover:after:w-3/4'}`}
+                    }`}
                     aria-expanded={resumeDropdownOpen}
                   >
-                    <span className="mr-1">{item.icon}</span>
+                    <span className="mr-2">{item.icon}</span>
                     {item.name}
-                    <ChevronDown size={16} className={`ml-1 transition-transform duration-300 ${resumeDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={16} className={`ml-2 transition-transform duration-300 ${resumeDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
-                  {/* Dropdown menu with enhanced styling */}
+                  {/* Desktop Dropdown menu */}
                   {resumeDropdownOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-slate-100 transform transition-all duration-200 origin-top-right">
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 transform origin-top-right animate-in fade-in scale-in-95 duration-200">
                       {item.options.map((option, index) => (
                         <button 
                           key={index}
                           onClick={() => handleResumeAction(option.action)}
-                          className="flex items-center w-full px-4 py-2 text-left text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150"
+                          className="flex items-center w-full px-4 py-3 text-left text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
                         >
-                          <span className="mr-2">{option.icon}</span>
-                          {option.name}
+                          <span className="mr-3 text-slate-500">{option.icon}</span>
+                          <span className="font-medium">{option.name}</span>
                         </button>
                       ))}
                     </div>
@@ -185,39 +165,36 @@ export default function Header({ activeSection, scrollToSection }) {
               ) : (
                 <button
                   onClick={() => scrollToSection(item.name.toLowerCase())}
-                  className={`flex items-center px-3 py-2 rounded-lg font-medium transition-all duration-300 ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                     activeSection === item.name.toLowerCase() 
                       ? 'text-blue-600 bg-blue-50 shadow-sm' 
                       : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
-                    } after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:w-0 
-                    after:h-0.5 after:bg-blue-600 after:transform after:-translate-x-1/2
-                    after:transition-all after:duration-300
-                    ${activeSection === item.name.toLowerCase() ? 'after:w-1/2' : 'hover:after:w-3/4'}`}
+                  }`}
                 >
-                  <span className="mr-1 hidden lg:inline">{item.icon}</span>
                   {item.name}
                 </button>
               )}
             </div>
           ))}
           
-          {/* Call to action button with enhanced styling */}
+          {/* Call to action button */}
           <a 
-            href="#"
+            href="#contact"
             onClick={(e) => {
               e.preventDefault();
               scrollToSection('contact');
             }}
-            className="ml-4 relative group overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-medium px-5 py-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md before:absolute before:inset-0 before:bg-white before:scale-x-0 before:origin-left before:transition-transform before:duration-300 before:ease-out before:z-0 hover:before:scale-x-100 hover:text-blue-600"
+            className="ml-4 relative group overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
-            <span className="relative z-10 transition-colors duration-300 group-hover:text-indigo-700">Hire Me</span>
+            <span className="relative z-10">Hire Me</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </a>
         </nav>
       </div>
       
       {/* Mobile Navigation Overlay */}
       <div 
-        className={`md:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+        className={`md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${
           mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setMobileMenuOpen(false)}
@@ -225,128 +202,82 @@ export default function Header({ activeSection, scrollToSection }) {
       
       {/* Mobile Navigation Panel */}
       <div 
-        className={`md:hidden fixed top-0 right-0 bottom-0 w-72 bg-white shadow-2xl z-50 transform transition-transform duration-500 ease-in-out ${
+        className={`md:hidden fixed top-0 right-0 bottom-0 w-80 bg-white border-l border-slate-200 shadow-2xl z-50 transform transition-transform duration-500 ease-in-out ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        } flex flex-col`}
+        }`}
       >
-        <div className="flex justify-between items-center p-5 border-b border-slate-100">
+        {/* Mobile Header */}
+        <div className="flex justify-between items-center p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
           <div className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Kushal Gupta
           </div>
           <button 
             onClick={() => setMobileMenuOpen(false)}
-            className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"
+            className="p-2 rounded-full hover:bg-white/80 text-slate-500 hover:text-slate-700 transition-colors duration-200"
             aria-label="Close menu"
           >
-            <X size={20} />
+            <X size={22} />
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto">
-          <div className="py-4">
-            {navigationItems.map((item, index) => (
-              <div key={item.name}>
-                {item.type === 'dropdown' ? (
-                  <div>
-                    <button
-                      onClick={() => setResumeDropdownOpen(!resumeDropdownOpen)}
-                      className="flex items-center justify-between w-full px-5 py-3 text-left text-slate-700 hover:bg-slate-50 transition-colors"
-                    >
-                      <div className="flex items-center">
-                        <span className="mr-3 text-blue-600">{item.icon}</span>
-                        {item.name}
-                      </div>
-                      <ChevronDown size={16} className={`transition-transform duration-300 ${resumeDropdownOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    
-                    {resumeDropdownOpen && (
-                      <div className="bg-slate-50 px-3 py-2">
-                        {item.options.map((option, optIndex) => (
-                          <button 
-                            key={optIndex}
-                            onClick={() => handleResumeAction(option.action)}
-                            className="flex items-center w-full px-6 py-2 text-left text-slate-600 hover:text-blue-600 transition-colors"
-                          >
-                            <span className="mr-2">{option.icon}</span>
-                            {option.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => {
-                      scrollToSection(item.name.toLowerCase());
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center px-5 py-3 text-left transition-all duration-200 ${
-                      activeSection === item.name.toLowerCase() 
-                        ? 'text-blue-600 bg-blue-50 font-medium border-l-4 border-blue-600' 
-                        : 'text-slate-700 hover:bg-slate-50 border-l-4 border-transparent hover:border-slate-200'
-                    }`}
-                  >
-                    <span className="mr-3 text-blue-600">{item.icon}</span>
+        {/* Mobile Navigation Items */}
+        <div className="flex-1 overflow-y-auto py-6 bg-white">
+          <nav className="px-6 space-y-3">
+            {navigationItems.map((item) => (
+              item.type === 'dropdown' ? (
+                <div key={item.name} className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-4 border border-slate-100">
+                  <div className="text-slate-800 font-semibold flex items-center mb-4">
                     {item.name}
-                  </button>
-                )}
-              </div>
+                  </div>
+                  <div className="space-y-2">
+                    {item.options.map((option, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          handleResumeAction(option.action);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex items-center w-full px-4 py-3 text-slate-700 hover:bg-white hover:text-blue-600 rounded-lg transition-all duration-200 hover:shadow-md border border-transparent hover:border-blue-100"
+                      >
+                        <span className="mr-3 text-slate-500">{option.icon}</span>
+                        <span className="font-medium">{option.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    scrollToSection(item.name.toLowerCase());
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-5 py-4 rounded-xl font-medium transition-all duration-200 border ${
+                    activeSection === item.name.toLowerCase()
+                      ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-md border-blue-200'
+                      : 'text-slate-700 hover:bg-gradient-to-r hover:from-slate-50 hover:to-blue-50 hover:text-blue-600 border-transparent hover:border-blue-100 hover:shadow-sm'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              )
             ))}
-          </div>
+          </nav>
         </div>
         
-        <div className="p-4 border-t border-slate-100">          
+        {/* Mobile Footer with Hire Me Button */}
+        <div className="p-6 border-t border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
           <button
             onClick={() => {
               scrollToSection('contact');
               setMobileMenuOpen(false);
             }}
-            className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-medium py-3 rounded-lg text-center shadow-sm hover:shadow transition-shadow duration-300"
+            className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105"
           >
             Hire Me
           </button>
         </div>
       </div>
-
-      {/* Resume Modal */}
-      {showResumeModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-slate-800">Resume</h3>
-              <button 
-                onClick={() => setShowResumeModal(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-auto p-4">
-              <iframe 
-                src="/KushalGuptaResume.pdf" 
-                className="w-full h-full min-h-[70vh]" 
-                title="Kushal Gupta Resume"
-              />
-            </div>
-            <div className="flex justify-end gap-2 p-4 border-t">
-              <a
-                href="/KushalGuptaResume.pdf"
-                download="Kushal_Gupta_Resume.pdf"
-                className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Download size={16} />
-                Download
-              </a>
-              <button
-                onClick={() => setShowResumeModal(false)}
-                className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
